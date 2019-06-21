@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	request "github.com/dgrijalva/jwt-go/request"
 )
 
 var (
@@ -37,5 +38,18 @@ func Login(c *gin.Context) {
 			fmt.Println(err)
 		}
 		c.JSON(http.StatusOK, tokenString)
+	}
+}
+
+var IsSignin = func(c *gin.Context) {
+	// check token
+	token, err := request.ParseFromRequest(c.Request, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
+		b := []byte(os.Getenv("SIGNINGKEY"))
+		return b, nil
+	})
+
+	if err != nil || !token.Valid {
+		fmt.Println("token error")
+		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 }

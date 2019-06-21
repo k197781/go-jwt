@@ -12,6 +12,13 @@ func main() {
 		c.String(200, "Hello,World!")
 	})
 
+	// check token
 	r.POST("/auth", auth.Login)
+
+	auth := r.Group("/", auth.IsSignin)
+
+	auth.GET("/private", func(c *gin.Context) {
+		c.String(200, "success!")
+	})
 	r.Run()
 }
